@@ -5,6 +5,7 @@ Let's Deploy our MERN (mongo, express, reaact, node) application using the follo
 * Heroku for node express API
 * Mlab for MongoDB
 * github pages for react web app
+* Heroku for react web app
 
 ## 1. Mlab
 
@@ -76,7 +77,7 @@ $ git push heroku master
 
 ## Github pages
 
-Note: you'll need to use dynamic urls to connect to your heroku API instead of localhost. Be sure you've used react environmnet variables to store them. You can create both .env.local and .env.production files with different values (local points to localhost and production to heroku). React will use the production variables for builds.
+Note: you'll need to use dynamic urls to connect to your heroku API instead of localhost. Be sure you've used react environment variables to store them. You can create both .env.local and .env.production files with different values (local points to localhost and production to heroku). React will use the production variables for builds.
 
 Go to your web directory
 
@@ -128,3 +129,43 @@ Done!, check out your Github pages url
 ![Alt text](images/github_url.png?raw=true)
 
 Done!, now just run `npm run deploy` to deploy your app yo github pages.
+
+## 4. React App in Heroku
+
+Note: you'll need to use dynamic urls to connect to your heroku API instead of localhost. Be sure you've used react environment variables to store them. You can create both .env.local and .env.production files with different values (local points to localhost and production to heroku). React will use the production variables for builds.
+
+We are going to use an Heroku buildpack for create-react-app that will handles all the build and deploy processes.
+
+You can follow this [tutorial](https://elements.heroku.com/buildpacks/mars/create-react-app-buildpack) at Heroku or here are the important steps:
+
+Note: if you have added the gh-pages config (basename, hash-router, homepage at package-json...), just remove it.
+
+Go to your web directory
+
+Be sure you are logged to Heroku CLI or run: 
+```
+$ heroku login
+```
+
+Run the command:
+
+```
+$ heroku create $APP_NAME --buildpack mars/create-react-app
+```
+
+Where `$APP_NAME` is the name you app will have at heroku and at the deployed URL.
+
+Now, be sure you have added and commited last changes.
+
+Finally, push your repo to heroku:
+
+```
+$ git push heroku master
+```
+
+You will be seeing your terminal working right now. When it finishes, run:
+
+```
+$ heroku open
+```
+
