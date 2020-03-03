@@ -3,38 +3,11 @@
 Let's Deploy our MERN (mongo, express, reaact, node) application using the following infrastructure stack:
 
 * Heroku for node express API
-* Mlab for MongoDB
+* Heroku Mongolab add-on for MongoDB
 * github pages for react web app
-* Heroku for react web app
+* OPTIONAL - Heroku for react web app
 
-## 1. Mlab
-
-Log in to mlab: https://mlab.com/login/
-
-Create a new database: https://mlab.com/create/wizard
-
-  - Select Amazon as Cloud Provider and SANDBOX (free) at Europe (Ireland) for the plan type
-  - Select a database name (I'd use your app name)
-
-Look at this order confirmation example:
-
-![Alt text](images/mlab_order_confirmation.png?raw=true)
-
-Submit your order!
-
-Wait a few seconds for the database to be created. Then click on the database name or go to the url https://mlab.com/databases/<database_name>
-
-Now we'll need to create an user for our database.
-
-Click on "Users"
-Click on "Add database user"
-Fill the form (please remember the password!!!)
-
-Nice! We'd need the url to connect to our database, you can copy it from the Mlab website:
-
-![Alt text](images/mlab_url.png?raw=true)
-
-## 2. Heroku
+## 1. Heroku
 
 Log in to heroku: https://id.heroku.com/login
 
@@ -59,21 +32,48 @@ $ heroku git:remote -a super-trello-api
 $ git push heroku master
 ```
 
-Done! your app is being deployed!
+Now your app is being deployed!
 
 Now we'd need to add our environment variables.
 
 Go to Settings
 
-Click on Reveal Confir Vars
+Click on Reveal Config Vars
 
-Add your environment variables. You'll need to add the MONGODB_URI with the value of your Mlab url, CORS, etc. _CHECK ALL YOUR ENVIRONMENT VARIABLES!!_.
+Add your environment variables. You'll need to add the MONGODB_URI with the value of your database url (see next step), CORS, etc. _CHECK ALL YOUR ENVIRONMENT VARIABLES!!_.
 
 From now, you can deploy your new commits to heroku by running:
 
 ```
 $ git push heroku master
 ```
+
+The thing is, if you access your server with `heroku open`, you'll get an application error. We can get more info by checking our heroku logs with `heroku logs`:
+
+```
+MongoError: failed to connect to server [localhost:27017] on first connect
+```
+
+Duh, we don't have a database yet!
+
+## 2. Mongolab add-on
+
+We can use the mongolab addon in heroku to deploy our database. We would do this by running the following command:
+
+```
+$ heroku addons:create mongolab:sandbox
+```
+
+This will fail if you haven't added a credit card to your heroku account. If you didn't add it for your second module project, go ahead and do that first! If you follow these steps, you won't get charged, as the Mongolab add-on is free. But be careful with other add-ons.
+
+Now we just need to connect our backend with the database. For that, we need the connection string for the Mongolab database.
+The Mongolab add-on adds an environment variable, `MONGODB_URI`. You can see it in the config section of your application in heroku, or by running the following command:
+
+```
+heroku config:get MONGODB_URI
+```
+
+This should output the full connection string. If you have already used `process.env.MONGODB_URI` in your API, you don't need to do anything else, it should be up and running! If you haven't, go ahead and add it in the `config/db.config.js` file of your API repository. Once you've done that, just commit and push to heroku, and the next time you access your API, it should be working!
 
 ## Github pages
 
@@ -130,7 +130,7 @@ Done!, check out your Github pages url
 
 Done!, now just run `npm run deploy` to deploy your app yo github pages.
 
-## 4. React App in Heroku
+## 4. OPTIONAL - React App in Heroku
 
 Note: you'll need to use dynamic urls to connect to your heroku API instead of localhost. Be sure you've used react environment variables to store them. You can create both .env.local and .env.production files with different values (local points to localhost and production to heroku). React will use the production variables for builds.
 
